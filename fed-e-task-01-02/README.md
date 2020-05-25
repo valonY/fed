@@ -13,9 +13,9 @@
 ### __标记整理法工作流程__
 **标记整理算法增强了标记清除算法，其在回收对象前会将对象的地址进行移动，使其在地址上连续，然后再回收。以下是流程简图<br>**
   `移动地址前:`
-  ![avatar][beforeSettleMemory]
+  ![image](https://github.com/valonY/fed/blob/master/fed-e-task-01-02/IMG/beforeSettleMemory.jpg)
   `移动地址后:`
-  ![avatar][afterSettleMemory]
+  ![image](https://github.com/valonY/fed/blob/master/fed-e-task-01-02/IMG/afterSettleMemory.jpg)
 
 ### __V8中新生代存储区垃圾回收流程__
 * 活动的对象存储在`From`空间内，当From空间应用到一定大小的时候就会`触发GC操作使用标记整理并整理活动对象的地址，使其连续`然后将活动对象拷贝(`复制算法`)至To，然后From空间进行内存释放。
@@ -27,7 +27,7 @@
 ### __描述增量标记算法在何时使用及工作原理。__
 **`增量标记是对标记清除算法对优化`，让其不会一口气的去寻找到所有活动对象。而是会穿插在程序的运行中执行，降低了程序的卡顿，当标记彻底采集完毕之后，才会把程序停下来，进行垃圾回收。以下是增量标记工作简图**
     **增量标记示意图:**
-    ![avatar][increaseTag]
+    ![image](https://github.com/valonY/fed/blob/master/fed-e-task-01-02/IMG/increaseTag.jpg)
 
 ## 实操
 ### Practice 1
