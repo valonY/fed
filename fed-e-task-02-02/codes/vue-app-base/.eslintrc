@@ -5,7 +5,11 @@
     "browser": true,
     "es6": true
   },
-  "extends": ["plugin:vue/essential", "plugin:vue/recommended", "@vue/standard"],
+  "extends": [
+    "plugin:vue/essential",
+    "plugin:vue/recommended",
+    "@vue/standard"
+  ],
   "plugins": ["vue"],
   "parserOptions": {
     "parser": "babel-eslint",
@@ -15,18 +19,125 @@
     }
   },
   "rules": {
-    "vue/html-self-closing": [
-      "error",
+    "vue/max-attributes-per-line": [
+      1,
       {
-        "html": {
-          "void": "any"
+        //多个特性的元素应该分多行撰写，每个特性一行
+        "singleline": 10,
+        "multiline": {
+          "max": 1,
+          "allowFirstLine": false
         }
       }
     ],
-    "vue/no-use-v-if-with-v-for": ["off"],
-    "vue/component-name-in-template-casing": ["off"],
-    "vue/name-property-casing": ["off"],
-    "vue/no-unused-components": ["off"],
+    "vue/singleline-html-element-content-newline": 0, // 在单行元素的内容前后需要换行符
+    "vue/multiline-html-element-content-newline": 0, // 在多行元素的内容之前和之后需要换行符
+    "vue/name-property-casing": [1, "PascalCase"], // JS/JSX中的组件名应该始终是帕斯卡命名法
+    "vue/no-v-html": 0,
+    "vue/prop-name-casing": [1, "camelCase"], // 在声明prop的时候，其命名应该始终使用驼峰命名
+    "vue/require-v-for-key": 1, // 给v-for设置键值，与key结合使用，可以高效的更新虚拟DOM
+    "vue/no-use-v-if-with-v-for": [
+      2,
+      {
+        "allowUsingIterationVar": false
+      }
+    ],
+    "vue/order-in-components": [
+      0,
+      {
+        // 组件/实例的选项的顺序
+        "order": [
+          "el",
+          "name",
+          "parent",
+          "functional",
+          ["delimiters", "comments"],
+          ["components", "directives", "filters"],
+          "extends",
+          "mixins",
+          "inheritAttrs",
+          "model",
+          ["props", "propsData"],
+          "data",
+          "computed",
+          "watch",
+          "LIFECYCLE_HOOKS",
+          "methods",
+          ["template", "render"],
+          "renderError"
+        ]
+      }
+    ],
+    "arrow-spacing": [
+      2,
+      {
+        // 在箭头函数之前/之后需要空格
+        "before": true,
+        "after": true
+      }
+    ],
+    "block-spacing": [2, "always"], // 在打开块之后和关闭块之前，禁止或强制执行块内部的空格
+    "comma-dangle": [2, "never"], // 要求或禁止使用尾随逗号；最后一个属性是不需要逗号
+    "comma-spacing": [
+      2,
+      {
+        // 强制逗号旁边的间距： 左右一个空格
+        "before": false,
+        "after": true
+      }
+    ],
+    "comma-style": [2, "last"], // 逗号风格
+    "curly": [2, "multi-line"],
+    "eqeqeq": [
+      0,
+      "always",
+      {
+        "null": "ignore"
+      }
+    ], // 是否使用全等
+    "indent": [
+      2,
+      2,
+      {
+        // 强制执行一致的缩进
+        "SwitchCase": 1
+      }
+    ],
+    "key-spacing": [
+      2,
+      {
+        // 在对象属性中强制键和值之间的一致间距
+        "beforeColon": false,
+        "afterColon": true
+      }
+    ],
+    "keyword-spacing": [
+      2,
+      {
+        // 关键字前后强制执行一致的间距
+        "before": true,
+        "after": true
+      }
+    ],
+    "new-cap": [
+      2,
+      {
+        // 要求构造函数名称以大写字母开头
+        "newIsCap": true,
+        "capIsNew": false
+      }
+    ],
+    "no-invalid-regexp": 2,
+    "no-unneeded-ternary": [
+      2,
+      {
+        // 当存在更简单的替代方案时，不允许三元运算符
+        "defaultAssignment": false
+      }
+    ],
+    "padded-blocks": [2, "never"],
+    "template-curly-spacing": [2, "never"],
+    "prefer-const": 1,
     "semi": ["error", "never"]
   }
 }

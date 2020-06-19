@@ -1,12 +1,11 @@
 {
   "singleQuote": true,
   "trailingComma": "all",
-  "printWidth": 100,
+  "eslintIntegration": true,
   "semi": false,
   "overrides": [
-    {
-      "files": ".prettierrc",
-      "options": { "parser": "json" }
+    { "files": ".prettierrc",
+      "options": { "parser": "vue" }
     }
   ]
 }
