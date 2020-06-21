@@ -1,23 +1,38 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" a="1" b="2" c="3" d="4" e="3" />
+    <img alt="Vue logo" src="./assets/logo.png" @click="test">
+    <el-button>2313</el-button>
     <HelloWorld msg="Welcome to Your Vue.js App" />
+    <Lazy />
   </div>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
+import { Button } from 'element-ui'
+import { test } from '@/utils'
+import merge from 'lodash/merge'
+import axios from 'axios'
+// const { Button } = require('element-ui')
+
+const req = axios.create({
+  baseURL: process.env.BASE_API_ROOT
+})
 
 export default {
   name: 'App',
   components: {
     HelloWorld,
+    'el-button': Button,
+    Lazy: () => import('@/components/Lazy')
   },
   methods: {
-    test() {
-      console.log(123)
-    },
-  },
+    test () {
+      test()
+      merge({}, {})
+      req('/orgs/octokit/repos')
+    }
+  }
 }
 </script>
 
@@ -27,7 +42,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #000;
   margin-top: 60px;
 }
 </style>
