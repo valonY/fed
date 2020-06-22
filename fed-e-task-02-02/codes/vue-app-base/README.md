@@ -26,8 +26,8 @@
     * 当production模式样式打包将不走单独进程，默认使用MiniCssPlugin时，请不要开启多进程模式，将报错。 development模式下样式打包是走单独进程的。
 
     * 文件file(url-loader, file-loader)没有开启多进程打包，development环境会开启'cache-loader'
-    * development 环境开启了webpack-bundle-analyzer，可以通过8888端口查看运行打包情况
-    * devServer 启动在源IP 0.0.0.0, 需要手动输入本地环路地址或或路地址别名(localhost)进行访问
+      development 环境开启了webpack-bundle-analyzer，可以通过8888端口查看运行打包情况
+      devServer 启动在源IP 0.0.0.0, 需要手动输入本地环路地址或或路地址别名(localhost)进行访问
 
     * 关于项目启动变量，文件根目录下有.env  .env.local .env.[NODE_ENV] .env.[NODE_ENV].local文件，里面但变量将注入到process.env内, 参
       ```
@@ -43,6 +43,8 @@
       BASE_API_ROOT=/api
       ```
       配置好环境变量之后，对应的可以查看webpack.dev.js文件中devServer的配置就能更灵活了
+    
+    * 因为项目已经配置了语法检测包括在保存代码时，pre-commit时都有语法检测，因此对js的解析并没有使用eslint-loader，毕竟加上eslint-loader也会减慢项目的编译速度。
 
 ## Supplement(To be optimize)
 * 项目没有使用dll, 考虑到需要再写一份配置并且要做抽离较为麻烦
