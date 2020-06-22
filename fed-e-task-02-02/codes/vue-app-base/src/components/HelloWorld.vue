@@ -38,13 +38,7 @@
     </h3>
     <ul>
       <li>
-        <a
-          href="https://vuejs.org"
-          target="_blank"
-          rel="noopener"
-          a="1"
-          b="2"
-        >
+        <a href="https://vuejs.org" target="_blank" rel="noopener" a="1" b="2">
           Core Docs
         </a>
       </li>
@@ -70,11 +64,7 @@
         >Twitter</a>
       </li>
       <li>
-        <a
-          href="https://news.vuejs.org"
-          target="_blank"
-          rel="noopener"
-        >News</a>
+        <a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a>
       </li>
     </ul>
     <h3>
@@ -89,11 +79,7 @@
         >vue-router</a>
       </li>
       <li>
-        <a
-          href="https://vuex.vuejs.org"
-          target="_blank"
-          rel="noopener"
-        >vuex</a>
+        <a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a>
       </li>
       <li>
         <a
@@ -158,6 +144,6 @@ li {
   margin: 0 10px;
 }
 a {
-  color: #fc1230;
+  color: #fc1234;
 }
 </style>

@@ -75,8 +75,10 @@
       "eslint --fix",
       "git add"
     ],
-    "*.less": "stylelint --syntax=less",
-    "*.css": "stylelint"
+    "*.{vue,less,css}": [
+      "stylelint --fix",
+      "git add"
+    ]
   },
   "husky": {
     "hooks": {
