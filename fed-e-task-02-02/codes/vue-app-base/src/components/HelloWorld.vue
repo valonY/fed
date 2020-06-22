@@ -144,6 +144,6 @@ li {
   margin: 0 10px;
 }
 a {
-  color: #fc1234;
+  color: #fc1230;
 }
 </style>
