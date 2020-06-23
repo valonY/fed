@@ -3,6 +3,7 @@ const pwd = process.cwd()
 const merge = require('webpack-merge')
 
 const webpack = require('webpack')
+const Server = require('webpack-dev-server/lib/Server')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
@@ -12,7 +13,32 @@ const MiniCssPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlTagPlugin = require('html-webpack-tags-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
+const threadLoader = require('thread-loader')
 const dotenv = require('dotenv')
+const createLogger = require('progress-estimator')
+const theme = require('progress-estimator/src/theme')
+
+theme.progressBackground = theme.bgHex('#fff').hex('#0ac')
+theme.progressForeground = theme.bgHex('#0af').hex('#fff')
+
+const logger = createLogger({
+  storagePath: resolve(pwd, `node_modules/.cache/.progress-estimator/${process.env.NODE_ENV}`)
+})
+
+const { exec } = require('child_process')
+
+const jsWorkerPool = {
+  poolTimeout: 2000
+}
+
+const cssWorkerPool = {
+  workerParallelJobs: 2,
+  poolTimeout: 2000
+}
+
+threadLoader.warmup(jsWorkerPool, ['babel-loader'])
+threadLoader.warmup(cssWorkerPool, ['style-loader', 'css-loader', 'less-loader'])
 
 function getEnvProperties () {
   const curEnvName = process.env.NODE_ENV
@@ -57,7 +83,15 @@ const isProd = process.env.NODE_ENV === 'production'
 const rules = {
   vue: {
     test: /\.vue$/,
-    use: ['thread-loader', 'vue-loader']
+    use: [
+      'thread-loader',
+      {
+        loader: 'vue-loader',
+        options: {
+          threadMode: true
+        }
+      }
+    ]
   },
   js: {
     test: /.js|jsx$/,
@@ -66,7 +100,8 @@ const rules = {
       {
         loader: 'thread-loader',
         options: {
-          name: '[name].[contenthash:8].js'
+          name: '[name].[contenthash:8].js',
+          ...jsWorkerPool
         }
       },
       {
@@ -79,10 +114,18 @@ const rules = {
   },
   css: {
     test: /.(le|c)ss$/,
-    use: ['thread-loader', 'style-loader', 'css-loader', 'less-loader']
+    use: [
+      {
+        loader: 'thread-loader',
+        options: cssWorkerPool
+      },
+      'style-loader',
+      'css-loader',
+      'less-loader'
+    ]
   },
-  file: {
-    test: /\.((webm|png|svg|jpg|jpeg|gif|woff|woff2|eot|ttf|otf))$/,
+  image: {
+    test: /\.((webm|png|svg|jpg|jpeg|gif|blob))$/,
     use: [
       'cache-loader',
       {
@@ -90,6 +133,21 @@ const rules = {
         options: {
           limit: 8 * 1024,
           esModule: false
+        }
+      }
+    ]
+  },
+  font: {
+    test: /\.(woff|woff2|eot|ttf|otf)$/,
+    use: [
+      'cache-loader',
+      {
+        loader: 'file-loader',
+        options: {
+          esModule: false,
+          name: '[name].[contenthash:8].[ext]',
+          outputPath: 'assets',
+          publicPath: '/assets'
         }
       }
     ]
@@ -154,11 +212,11 @@ const config = {
       '.vue',
       '.js',
       '.jsx',
-      '.json',
-      '.scss',
-      '.sass',
-      '.less',
-      '.css'
+      '.json'
+      // '.less', // 非react项目，无需添加样式类拓展名
+      // '.scss',
+      // '.sass',
+      // '.css'
     ]
   },
   optimization: {
@@ -167,6 +225,22 @@ const config = {
     chunkIds: 'named',
     moduleIds: 'hashed',
     sideEffects: true,
+    minimizer: [
+      // 这里不做环境区分，development模式下无效
+      new TerserPlugin({
+        parallel: require('os').cpus().length, // CPU数量 可输入 false true
+        cache: true,
+        terserOptions: {
+          comments: false,
+          compress: {
+            unused: true, // 移除无用代码
+            drop_debugger: true, // 移除debugger
+            drop_console: true, // 移除console
+            dead_code: true // 移除无用代码
+          }
+        }
+      })
+    ],
     runtimeChunk: {
       name: 'runtime'
     },
@@ -247,10 +321,10 @@ class Packer {
       })
         .removeDevServer() // 移除devServer
         .removePlugin('hotModule') // 移除hotModule插件
-        .removePlugin('analyze') // 移除尺寸分析插件
-        .setRuleItem('css')(() => ({
+        .removePlugin('analyze') // 移除包大小分析插件
+        .setRuleItem('css')((rule) => ({
           // 重置样式打包的规则
-          test: /.(le|c)ss$/,
+          test: rule.test,
           use: [
             {
               loader: MiniCssPlugin.loader,
@@ -262,19 +336,41 @@ class Packer {
             'less-loader'
           ]
         }))
-        // 重置file打包的规则
-        .setRuleItem('file')(() => ({
-          test: /\.(webm|png|svg|jpg|jpeg|gif|woff|woff2|eot|ttf|otf)$/,
+        // 重置image打包的规则
+        .setRuleItem('image')((rule) => ({
+          test: rule.test,
           use: [
             {
               loader: 'url-loader',
               options: {
-                limit: 5 * 1024, // win系统下新建文件默认已具有4kb(头部声明)
+                limit: 8 * 1024, // win系统下新建文件默认已具有4kb(头部声明)
                 esModule: false,
                 name: '[name].[contenthash:8].[ext]',
                 outputPath: 'assets',
                 publicPath: '/assets',
                 fallback: 'file-loader'
+              }
+            },
+            {
+              loader: 'image-webpack-loader',
+              options: {
+                mozjpeg: {
+                  progressive: true,
+                  quality: 65
+                },
+                optipng: {
+                  enabled: false
+                },
+                pngquant: {
+                  quality: [0.65, 0.9],
+                  speed: 4
+                },
+                gifsicle: {
+                  interlaced: false
+                },
+                webp: {
+                  quality: 75
+                }
               }
             }
           ]
@@ -302,7 +398,9 @@ class Packer {
           {}
           const chunks = []
           for (const k in optimization) {
-            if (!optimization[k].name) { throw new Error('Chunk should have a name to support html plugin!') }
+            if (!optimization[k].name) {
+              throw new Error('Chunk should have a name to support html plugin!')
+            }
             chunks.push(optimization[k].name)
           }
           chunks.push('main')
@@ -450,6 +548,54 @@ class Packer {
   // 导出webpack配置
   getConfig () {
     return this.cfg
+  }
+
+  build (cb) {
+    const build = new Promise((resolve, reject) => {
+      const config = this.getConfig()
+      const compile = webpack(config)
+      compile.run((err, info) => {
+        if (err) return reject(err)
+        cb && cb(info)
+        console.log(`build finished! cost: ${(info.endTime - info.startTime) / 1000}s`)
+        resolve(info)
+      })
+    })
+    logger(
+      build.then(() => {
+        exec('pkill node && clear') // 使用多进程打包，打包结束需要关闭进程
+      }),
+      'PackerTask_production',
+      {
+        estimate: 6000
+      }
+    )
+  }
+
+  serve (cb) {
+    const config = this.getConfig()
+    const task = new Promise((resolve, reject) => {
+      try {
+        const compile = webpack(config)
+        const serve = new Server(compile, config.devServer)
+        serve.listen(config.devServer.port || '8080', config.devServer.host, () => {
+          console.log('server start!')
+        })
+        compile.hooks.done.tap('done', (compilation) => {
+          cb && cb()
+          resolve()
+        })
+      } catch (err) {
+        reject(err)
+      }
+    })
+    logger(
+      task,
+      'PackerTask_development',
+      {
+        estimate: 4000
+      }
+    )
   }
 }
 

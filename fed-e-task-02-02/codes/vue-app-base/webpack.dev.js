@@ -3,6 +3,7 @@ const Packer = require('./makePackCfg')
 const packer = new Packer()
 
 packer.setDevServer((config) => {
+  config.open = false
   config.proxy = {
     [process.env.BASE_API_ROOT]: {
       target: process.env.HOST,
@@ -14,4 +15,4 @@ packer.setDevServer((config) => {
   return config
 })
 
-module.exports = packer.getConfig()
+packer.serve()

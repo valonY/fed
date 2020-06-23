@@ -1,9 +1,10 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" @click="test">
-    <el-button>2313</el-button>
+    <el-button>23x13</el-button>
     <HelloWorld msg="Welcome to Your Vue.js App" />
     <Lazy />
+    <Test />
   </div>
 </template>
 
@@ -13,6 +14,7 @@ import { Button } from 'element-ui'
 import { test } from '@/utils'
 import merge from 'lodash/merge'
 import axios from 'axios'
+import Test from './components/Test'
 // const { Button } = require('element-ui')
 
 const req = axios.create({
@@ -24,6 +26,7 @@ export default {
   components: {
     HelloWorld,
     'el-button': Button,
+    Test,
     Lazy: () => import('@/components/Lazy')
   },
   methods: {

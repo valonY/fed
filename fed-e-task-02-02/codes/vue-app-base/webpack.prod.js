@@ -8,6 +8,9 @@ packer.setExternals({
   vuex: 'Vuex',
   'element-ui': 'ELEMENT',
   axios: 'axios'
+}, cacheGroup => {
+  Reflect.deleteProperty(cacheGroup, 'element')
+  return cacheGroup
 })([
   '//unpkg.com/vue@2.6.11/dist/vue.min.js',
   '//unpkg.com/vue-router@3.3.4/dist/vue-router.min.js',
@@ -16,4 +19,4 @@ packer.setExternals({
   '//cdn.bootcss.com/axios/0.19.2/axios.min.js'
 ])
 
-module.exports = packer.getConfig()
+packer.build()

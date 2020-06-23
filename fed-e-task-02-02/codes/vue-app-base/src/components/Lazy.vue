@@ -9,6 +9,11 @@ export default {
       lazyMsg: 'lazy message'
     }
   }
+  // render () {
+  //   return <div class="lazy">
+  //     <img alt="Vue logo" src="./assets/logo.png" onClick="test" />
+  //   </div>
+  // }
 }
 </script>
 

@@ -11,7 +11,7 @@
 2. 补充点: 尝试封装了一个tools(makePackCfg)类似chainWebpack但没有那么复杂,来让配置更加定制化(针对vue,可以针对packer规则重写),如果为了以后方便可以将其抽出到单独脚手架中，但其作用更像是一个工具而已，以下是内置的规则主要简介:
     * packer支持链式调用(非函数式)
 
-    * 项目配置内部启用多进程打包，提高编译速度,开发者可以根据自己的需要，调用setRuleItem Api加入'cache-loader',再加快打包速度。
+    * 项目配置内部启用多进程打包，提高编译速度,开发者可以根据自己的需要，调用setRuleItem Api加入'cache-loader',再加快打包速度(可能有坑)。
 
     * 提供重写rules，重写plugins的API，具体使用参见makePackCfg.js 中的defaultProdSet方法, 注意: 如果调用setRuleItem/setPlugin重写或新增rule/plugin后(可以多次)，但最后需要调用对应的transPlugins/transRule方法来使packer配置转换为webpack需要的配置.
 
@@ -44,8 +44,11 @@
       ```
       配置好环境变量之后，对应的可以查看webpack.dev.js文件中devServer的配置就能更灵活了
     
-    * 因为项目已经配置了语法检测包括在保存代码时，pre-commit时都有语法检测，因此对js的解析并没有使用eslint-loader，毕竟加上eslint-loader也会减慢项目的编译速度。
+    * 因为项目已经配置了语法检测包括在保存代码时，pre-commit时都有语法检测，因此对js的解析并没有使用eslint-loader，毕竟加上eslint-loader也会减慢项目的编译速度, 并且项目没有使用prettier来强制覆盖代码，我觉得这应该是不合理的，开发者的代码应该受规范约束，而不是规范帮我们写代码。
+
+    * 同时应该确保vscode安装了eslint与stylelint插件
 
 ## Supplement(To be optimize)
+* 如果不习惯可以使用webpack-chain生成配置: https://github.com/neutrinojs/webpack-chain#getting-started
 * 项目没有使用dll, 考虑到需要再写一份配置并且要做抽离较为麻烦
 * 项目没有使用HardSourceWebpackPlugin，不稳定
