@@ -20,6 +20,6 @@
     "grunt-useref": "^0.0.16",
     "load-grunt-tasks": "^5.1.0",
     "lodash.merge": "^4.6.2",
-    "node-sass": "^4.14.1"
+    "node-sass": "^7.0.0"
   }
 }
